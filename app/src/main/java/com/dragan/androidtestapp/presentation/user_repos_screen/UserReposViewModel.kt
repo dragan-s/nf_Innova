@@ -17,43 +17,66 @@ class UserReposViewModel @Inject constructor(
     private val repository: GithubApiImpl
 ) : ViewModel() {
 
+    var isLoading = mutableStateOf(false)
+    var loadError = mutableStateOf("")
+
     val user = mutableStateOf<User?>(null)
     var reposList = mutableStateOf<List<Repo>>(listOf())
 
     init {
         viewModelScope.launch {
+            isLoading.value = true
             getUser(TEST_USERNAME)
         }
 
     }
 
-    suspend fun getUser(name: String) : Resource<User> {
-        val result = repository.getUser(name)
-        when (result) {
-            is Resource.Success -> {
-                println("#### result.data?.name | ${result.data?.login}")
-                if (!result.data?.name.isNullOrEmpty()) {
-                    user.value = result.data
-                    getUserRepos(result.data.login)
+    fun getUser(name: String)  {
+        viewModelScope.launch {
+            val result = repository.getUser(name)
+            when (result) {
+                is Resource.Success -> {
+                    println("#### result.data?.name | ${result.data?.login}")
+                    if (!result.data?.login.isNullOrEmpty()) {
+                        isLoading.value = false
+                        loadError.value = ""
+                        user.value = result.data
+                        getUserRepos(result.data.login)
+                    }
+                }
+
+                is Resource.Error -> {
+                    isLoading.value = false
+                    loadError.value = result.message.toString()
+                }
+                is Resource.Loading -> {
+
                 }
             }
-
-            is Resource.Error -> {
-
-            }
-            is Resource.Loading -> {
-
-            }
         }
-        return result
     }
 
     fun getUserRepos(name: String) {
         viewModelScope.launch {
+            isLoading.value = true
             val result = repository.getUserRepos(name)
-            println("##### user repos = ${result.data}")
-            if (!result.data.isNullOrEmpty()) {
-                reposList.value = result.data
+            when (result) {
+                is Resource.Success -> {
+                    println("##### user repos = ${result.data}")
+                    if (!result.data.isNullOrEmpty()) {
+                        isLoading.value = false
+                        loadError.value = ""
+                        reposList.value = result.data
+                    }
+                }
+
+                is Resource.Error -> {
+                    isLoading.value = false
+                    loadError.value = result.message.toString()
+                }
+                is Resource.Loading -> {
+
+                }
             }
         }
     }

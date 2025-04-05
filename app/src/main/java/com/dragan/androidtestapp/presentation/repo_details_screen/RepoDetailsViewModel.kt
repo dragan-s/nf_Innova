@@ -21,29 +21,56 @@ class RepoDetailsViewModel @Inject constructor(
     val userName: String = checkNotNull(savedStateHandle["userName"])
     val repoName: String = checkNotNull(savedStateHandle["repoName"])
 
+    var isLoading = mutableStateOf(false)
+    var loadError = mutableStateOf("")
+
     var tagsList = mutableStateOf<List<Tag>>(listOf())
     val repoDetails = mutableStateOf<RepoDetails?>(null)
 
     init {
+        isLoading.value = true
+        getRepoDetails()
+        getTags()
+    }
+
+    fun getRepoDetails(){
         viewModelScope.launch {
-            getRepoDetails(userName, repoName)
-            getTags(userName, repoName)
+            isLoading.value = true
+            val result = repository.getRepoDetails(userName, repoName)
+            when (result) {
+                is Resource.Success -> {
+                    isLoading.value = false
+                    loadError.value = ""
+                    repoDetails.value = result.data
+                }
+                is Resource.Error -> {
+                    isLoading.value = false
+                    loadError.value = result.message.toString()
+                }
+                is Resource.Loading -> {}
+            }
         }
     }
 
-
-    suspend fun getRepoDetails(name: String, repo: String): Resource<RepoDetails> {
-        val result = repository.getRepoDetails(name, repo = repo)
-        repoDetails.value = result.data
-        return result
-    }
-
-    suspend fun getTags(userName: String, repoName: String) {
+    fun getTags() {
         println("#### tags | username = $userName | repo name = $repoName")
-        val result = repository.getRepoTags(userName, repoName)
-        if (!result.data.isNullOrEmpty()) {
-            tagsList.value = result.data
+        viewModelScope.launch {
+            isLoading.value = true
+            val result = repository.getRepoTags(userName, repoName)
+            when (result) {
+                is Resource.Success -> {
+                    if (!result.data.isNullOrEmpty()) {
+                        isLoading.value = false
+                        loadError.value = ""
+                        tagsList.value = result.data
+                    }
+                }
+                is Resource.Error -> {
+                    isLoading.value = false
+                    loadError.value = result.message.toString()
+                }
+                is Resource.Loading -> {}
+            }
         }
-
     }
 }

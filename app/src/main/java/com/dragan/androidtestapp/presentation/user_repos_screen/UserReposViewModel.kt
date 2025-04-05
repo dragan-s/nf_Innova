@@ -24,11 +24,8 @@ class UserReposViewModel @Inject constructor(
     var reposList = mutableStateOf<List<Repo>>(listOf())
 
     init {
-        viewModelScope.launch {
-            isLoading.value = true
-            getUser(TEST_USERNAME)
-        }
-
+        isLoading.value = true
+        getUser(TEST_USERNAME)
     }
 
     fun getUser(name: String)  {
@@ -44,14 +41,11 @@ class UserReposViewModel @Inject constructor(
                         getUserRepos(result.data.login)
                     }
                 }
-
                 is Resource.Error -> {
                     isLoading.value = false
                     loadError.value = result.message.toString()
                 }
-                is Resource.Loading -> {
-
-                }
+                is Resource.Loading -> {}
             }
         }
     }
@@ -69,14 +63,11 @@ class UserReposViewModel @Inject constructor(
                         reposList.value = result.data
                     }
                 }
-
                 is Resource.Error -> {
                     isLoading.value = false
                     loadError.value = result.message.toString()
                 }
-                is Resource.Loading -> {
-
-                }
+                is Resource.Loading -> {}
             }
         }
     }

@@ -7,7 +7,7 @@ import com.dragan.androidtestapp.data.remote.responses.Tag
 import com.dragan.androidtestapp.data.remote.responses.User
 import dagger.hilt.android.scopes.ActivityScoped
 import javax.inject.Inject
-import com.dragan.androidtestapp.util.Result
+import com.dragan.androidtestapp.domain.Result
 
 @ActivityScoped
 class GithubRepository @Inject constructor(

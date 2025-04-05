@@ -70,6 +70,8 @@ dependencies {
 
     implementation(libs.coil.compose)
 
+    implementation(libs.logging.interceptor)
+
     kapt(libs.androidx.hilt.compiler)
 
     testImplementation(libs.junit)

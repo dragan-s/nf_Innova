@@ -6,10 +6,10 @@ import androidx.lifecycle.viewModelScope
 import com.dragan.androidtestapp.data.remote.responses.RepoDetails
 import com.dragan.androidtestapp.data.remote.responses.Tag
 import com.dragan.androidtestapp.repository.GithubRepository
-import com.dragan.androidtestapp.util.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.dragan.androidtestapp.domain.Result
 
 @HiltViewModel
 class RepoDetailsViewModel @Inject constructor(

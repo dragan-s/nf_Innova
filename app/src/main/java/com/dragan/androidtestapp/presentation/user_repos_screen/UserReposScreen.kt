@@ -25,7 +25,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.dragan.androidtestapp.data.remote.responses.Repo
 import com.dragan.androidtestapp.data.remote.responses.User
 import com.dragan.androidtestapp.util.Constants.TEST_USERNAME
-import com.dragan.androidtestapp.util.Result
+import com.dragan.androidtestapp.domain.Result
 
 @Composable
 fun UserReposScreen(

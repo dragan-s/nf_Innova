@@ -14,6 +14,7 @@ kotlixCoroutinesCore = "1.10.1"
 navigationCompose = "2.8.9"
 hiltLifecycleViewmodel = "1.2.0"
 coilCompose = "2.7.0"
+loggingInterceptor = "4.12.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -41,6 +42,7 @@ kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-cor
 kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlixCoroutinesCore"}
 androidx-navigation-compose = {group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose"}
 coil-compose = {group = "io.coil-kt", name = "coil-compose", version.ref = "coilCompose"}
+logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "loggingInterceptor"}
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

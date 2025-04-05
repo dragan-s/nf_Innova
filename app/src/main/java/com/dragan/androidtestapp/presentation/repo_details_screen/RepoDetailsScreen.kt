@@ -53,7 +53,7 @@ fun RepoDetailsScreen(
                 userName = repoDetails?.owner?.login ?: "",
                 repoName = repoDetails?.name ?: "",
                 watchers = repoDetails?.watchers_count ?: -1,
-                forks = repoDetails?.forks ?: -1
+                forks = repoDetails?.forks_count ?: -1
             )
 
             Spacer(modifier = Modifier.height(10.dp))
@@ -64,7 +64,6 @@ fun RepoDetailsScreen(
                 } else {
                     "No tags for this repository"
                 }
-
 
             Text(
                 text = tagText,
@@ -131,12 +130,12 @@ fun RepoDetailsHeader(
             modifier = Modifier.weight(1f)
         ) {
             Text(
-                text = userName,
+                text = "user: $userName",
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp
             )
             Text(
-                text = repoName,
+                text = "repo name: $repoName",
                 fontSize = 16.sp,
                 color = Color.DarkGray
             )

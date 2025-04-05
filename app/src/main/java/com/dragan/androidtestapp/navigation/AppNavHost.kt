@@ -7,6 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
+import com.dragan.androidtestapp.presentation.repo_details_screen.RepoDetailsScreen
 import com.dragan.androidtestapp.presentation.user_repos_screen.UserReposScreen
 
 @Composable
@@ -20,8 +21,8 @@ fun AppNavHost(navController: NavHostController, innerPadding: PaddingValues) {
         composable("user_repos_screen") {
             UserReposScreen(navController = navController)
         }
-        /*composable("repo_details_screen") {
-
-        }*/
+        composable("repo_details_screen") {
+            RepoDetailsScreen()
+        }
     }
 }

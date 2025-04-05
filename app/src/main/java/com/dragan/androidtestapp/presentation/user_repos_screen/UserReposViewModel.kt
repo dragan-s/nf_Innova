@@ -3,6 +3,7 @@ package com.dragan.androidtestapp.presentation.user_repos_screen
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dragan.androidtestapp.data.remote.responses.Repo
 import com.dragan.androidtestapp.data.remote.responses.User
 import com.dragan.androidtestapp.repository.GithubRepository
 import com.dragan.androidtestapp.util.Result
@@ -15,7 +16,7 @@ class UserReposViewModel @Inject constructor(
     private val repository: GithubRepository
 ) : ViewModel() {
 
-    var isLoading = mutableStateOf(false)
+    var reposList = mutableStateOf<List<Repo>>(listOf())
 
     suspend fun getUser(name: String) : Result<User> {
         val result = repository.getUser(name)
@@ -41,6 +42,9 @@ class UserReposViewModel @Inject constructor(
         viewModelScope.launch {
             val result = repository.getUserRepos(name)
             println("##### user repos = ${result.data}")
+            if (!result.data.isNullOrEmpty()) {
+                reposList.value = result.data
+            }
         }
     }
 }

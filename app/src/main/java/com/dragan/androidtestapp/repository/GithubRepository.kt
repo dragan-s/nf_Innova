@@ -1,8 +1,8 @@
 package com.dragan.androidtestapp.repository
 
 import com.dragan.androidtestapp.data.remote.GithubApi
+import com.dragan.androidtestapp.data.remote.responses.Repo
 import com.dragan.androidtestapp.data.remote.responses.RepoDetails
-import com.dragan.androidtestapp.data.remote.responses.Repos
 import com.dragan.androidtestapp.data.remote.responses.Tag
 import com.dragan.androidtestapp.data.remote.responses.User
 import dagger.hilt.android.scopes.ActivityScoped
@@ -23,7 +23,7 @@ class GithubRepository @Inject constructor(
         return Result.Success(response)
     }
 
-    suspend fun getUserRepos(name: String) : Result<Repos> {
+    suspend fun getUserRepos(name: String) : Result<List<Repo>> {
         val response = try {
             api.getUserRepos(name)
         } catch (e: Exception) {

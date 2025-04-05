@@ -1,9 +1,9 @@
-package com.dragan.androidtestapp.data.remote
+package com.dragan.androidtestapp.repository
 
-import com.dragan.androidtestapp.data.remote.responses.Repo
-import com.dragan.androidtestapp.data.remote.responses.RepoDetails
-import com.dragan.androidtestapp.data.remote.responses.Tag
-import com.dragan.androidtestapp.data.remote.responses.User
+import com.dragan.androidtestapp.domain.entities.responses.Repo
+import com.dragan.androidtestapp.domain.entities.responses.RepoDetails
+import com.dragan.androidtestapp.domain.entities.responses.Tag
+import com.dragan.androidtestapp.domain.entities.responses.User
 import retrofit2.http.GET
 import retrofit2.http.Path
 

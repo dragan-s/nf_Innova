@@ -33,14 +33,7 @@ fun AppNavHost(navController: NavHostController, innerPadding: PaddingValues) {
                     type = NavType.StringType
                 }
             )) {
-            val userName = remember {
-                it.arguments?.getString("userName")
-            }
-            val repoName = remember {
-                it.arguments?.getString("repoName")
-            }
-            RepoDetailsScreen(
-                userName = userName ?: "", repoName = repoName ?:"")
+            RepoDetailsScreen()
         }
     }
 }

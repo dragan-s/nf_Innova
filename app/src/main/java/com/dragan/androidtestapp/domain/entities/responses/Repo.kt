@@ -1,4 +1,4 @@
-package com.dragan.androidtestapp.data.remote.responses
+package com.dragan.androidtestapp.domain.entities.responses
 
 data class Repo(
     val allow_forking: Boolean,

@@ -14,7 +14,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -22,10 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.dragan.androidtestapp.data.remote.responses.Repo
-import com.dragan.androidtestapp.data.remote.responses.User
-import com.dragan.androidtestapp.util.Constants.TEST_USERNAME
-import com.dragan.androidtestapp.domain.Result
+import com.dragan.androidtestapp.domain.entities.responses.Repo
 
 @Composable
 fun UserReposScreen(
@@ -33,11 +29,7 @@ fun UserReposScreen(
     viewModel: UserReposViewModel = hiltViewModel(),
 ) {
 
-    val user = produceState<Result<User>>(
-        initialValue = Result.Loading()
-    ) {
-        value = viewModel.getUser(TEST_USERNAME)
-    }.value
+    val user by remember { viewModel.user }
 
     Surface(
         modifier = Modifier.fillMaxSize()
@@ -49,15 +41,14 @@ fun UserReposScreen(
                 modifier = Modifier
                     .padding(8.dp)
                     .fillMaxWidth(),
-                text = "User : ${user.data?.name}"
+                text = "User : ${user?.name}"
             )
 
             Spacer(modifier = Modifier.height(25.dp))
 
-            ReposList(navController = navController, user.data?.login)
+            ReposList(navController = navController, user?.login)
         }
     }
-
 }
 
 @Composable
@@ -66,6 +57,7 @@ fun ReposList(
     userName: String?,
     viewModel: UserReposViewModel = hiltViewModel(),
 ) {
+
     val reposList by remember { viewModel.reposList }
 
     LazyColumn(

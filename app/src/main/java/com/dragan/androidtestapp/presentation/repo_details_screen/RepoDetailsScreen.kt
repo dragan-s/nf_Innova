@@ -19,7 +19,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,25 +29,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
-import com.dragan.androidtestapp.data.remote.responses.RepoDetails
-import com.dragan.androidtestapp.domain.Result
 
 @Composable
 fun RepoDetailsScreen(
-    userName: String,
-    repoName: String,
     viewModel: RepoDetailsViewModel = hiltViewModel()
 ) {
 
-    val repoDetails = produceState<Result<RepoDetails>>(
-        initialValue = Result.Loading()
-    ) {
-        value = viewModel.getRepoDetails(userName, repoName)
-    }.value
-
+    val repoDetails by remember { viewModel.repoDetails }
     val tagsList by remember { viewModel.tagsList }
-
-    viewModel.getTags(userName, repoName)
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -56,11 +44,11 @@ fun RepoDetailsScreen(
     ) {
         item {
             RepoDetailsHeader(
-                avatarUrl = repoDetails.data?.owner?.avatar_url ?: "",
-                userName = repoDetails.data?.owner?.login ?: "",
-                repoName = repoDetails.data?.name ?: "",
-                watchers = repoDetails.data?.watchers_count ?: -1,
-                forks = repoDetails.data?.forks ?: -1
+                avatarUrl = repoDetails?.owner?.avatar_url ?: "",
+                userName = repoDetails?.owner?.login ?: "",
+                repoName = repoDetails?.name ?: "",
+                watchers = repoDetails?.watchers_count ?: -1,
+                forks = repoDetails?.forks ?: -1
             )
 
             Spacer(modifier = Modifier.height(10.dp))

@@ -1,7 +1,7 @@
 package com.dragan.androidtestapp.di
 
-import com.dragan.androidtestapp.data.remote.GithubApi
-import com.dragan.androidtestapp.repository.GithubRepository
+import com.dragan.androidtestapp.repository.GithubApi
+import com.dragan.androidtestapp.repository.remote.GithubApiImpl
 import com.dragan.androidtestapp.util.Constants.BASE_URL
 import dagger.Module
 import dagger.Provides
@@ -21,7 +21,7 @@ object AppModule  {
     @Provides
     fun provideGithubRepository(
         api: GithubApi
-    ) = GithubRepository(api)
+    ) = GithubApiImpl(api)
 
 
     @Provides

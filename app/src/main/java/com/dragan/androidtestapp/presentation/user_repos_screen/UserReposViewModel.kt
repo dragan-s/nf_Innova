@@ -3,35 +3,45 @@ package com.dragan.androidtestapp.presentation.user_repos_screen
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dragan.androidtestapp.data.remote.responses.Repo
-import com.dragan.androidtestapp.data.remote.responses.User
-import com.dragan.androidtestapp.repository.GithubRepository
+import com.dragan.androidtestapp.domain.entities.responses.Repo
+import com.dragan.androidtestapp.domain.entities.responses.User
+import com.dragan.androidtestapp.repository.remote.GithubApiImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import com.dragan.androidtestapp.domain.Result
+import com.dragan.androidtestapp.domain.Resource
+import com.dragan.androidtestapp.util.Constants.TEST_USERNAME
 
 @HiltViewModel
 class UserReposViewModel @Inject constructor(
-    private val repository: GithubRepository
+    private val repository: GithubApiImpl
 ) : ViewModel() {
 
+    val user = mutableStateOf<User?>(null)
     var reposList = mutableStateOf<List<Repo>>(listOf())
 
-    suspend fun getUser(name: String) : Result<User> {
+    init {
+        viewModelScope.launch {
+            getUser(TEST_USERNAME)
+        }
+
+    }
+
+    suspend fun getUser(name: String) : Resource<User> {
         val result = repository.getUser(name)
         when (result) {
-            is Result.Success -> {
+            is Resource.Success -> {
                 println("#### result.data?.name | ${result.data?.login}")
                 if (!result.data?.name.isNullOrEmpty()) {
+                    user.value = result.data
                     getUserRepos(result.data.login)
                 }
             }
 
-            is Result.Error -> {
+            is Resource.Error -> {
 
             }
-            is Result.Loading -> {
+            is Resource.Loading -> {
 
             }
         }

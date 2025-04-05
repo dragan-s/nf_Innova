@@ -24,7 +24,6 @@ import androidx.navigation.NavController
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.dragan.androidtestapp.data.remote.responses.Repo
 import com.dragan.androidtestapp.data.remote.responses.User
-import com.dragan.androidtestapp.navigation.AppNavHost
 import com.dragan.androidtestapp.util.Constants.TEST_USERNAME
 import com.dragan.androidtestapp.util.Result
 
@@ -47,7 +46,6 @@ fun UserReposScreen(
             Spacer(modifier = Modifier.height(25.dp))
 
             Text(
-                //textAlign = Alignment.Center,
                 modifier = Modifier
                     .padding(8.dp)
                     .fillMaxWidth(),
@@ -56,7 +54,7 @@ fun UserReposScreen(
 
             Spacer(modifier = Modifier.height(25.dp))
 
-            ReposList(navController = navController)
+            ReposList(navController = navController, user.data?.login)
         }
     }
 
@@ -65,6 +63,7 @@ fun UserReposScreen(
 @Composable
 fun ReposList(
     navController: NavController,
+    userName: String?,
     viewModel: UserReposViewModel = hiltViewModel(),
 ) {
     val reposList by remember { viewModel.reposList }
@@ -72,10 +71,9 @@ fun ReposList(
     LazyColumn(
         contentPadding = PaddingValues(16.dp)
     ) {
-        val itemCount = reposList.size
         items(reposList) { repoItem ->
             RepoRowItem(repoItem, onClick = {
-                navController.navigate("repo_details_screen")
+                navController.navigate("repo_details_screen/${userName}/${repoItem.name}")
             })
         }
     }

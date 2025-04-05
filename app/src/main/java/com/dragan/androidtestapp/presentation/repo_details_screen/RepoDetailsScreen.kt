@@ -3,17 +3,25 @@ package com.dragan.androidtestapp.presentation.repo_details_screen
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -39,16 +47,49 @@ fun RepoDetailsScreen(
         value = viewModel.getRepoDetails(userName, repoName)
     }.value
 
-    //Text(text ="Name : ${repoDetails.data?.name}")
+    val tagsList by remember { viewModel.tagsList }
 
-    RepoDetailsHeader(
-        avatarUrl = repoDetails.data?.owner?.avatar_url ?: "",
-        userName = repoDetails.data?.owner?.login ?: "",
-        repoName = repoDetails.data?.name ?: "",
-        watchers = repoDetails.data?.watchers_count ?: -1,
-        forks = repoDetails.data?.forks ?: -1
-        )
+    viewModel.getTags(userName, repoName)
 
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(16.dp)
+    ) {
+        item {
+            RepoDetailsHeader(
+                avatarUrl = repoDetails.data?.owner?.avatar_url ?: "",
+                userName = repoDetails.data?.owner?.login ?: "",
+                repoName = repoDetails.data?.name ?: "",
+                watchers = repoDetails.data?.watchers_count ?: -1,
+                forks = repoDetails.data?.forks ?: -1
+            )
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            val tagText =
+                if (tagsList.isNotEmpty()) {
+                    "Repo tags"
+                } else {
+                    "No tags for this repository"
+                }
+
+
+            Text(
+                text = tagText,
+                fontWeight = FontWeight.Bold,
+                fontSize = 16.sp,
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
+        }
+
+        items(tagsList) {tag ->
+            TagItem(
+                tagName = tag.name,
+                sha = tag.commit.sha
+            )
+            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+        }
+    }
 }
 
 @Composable
@@ -100,5 +141,13 @@ fun RepoDetailsHeader(
                 Text(text = "Forks: $forks")
             }
         }
+    }
+}
+
+@Composable
+fun TagItem(tagName: String, sha: String) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Text(text = tagName, fontWeight = FontWeight.Bold)
+        Text(text = "SHA: $sha", fontSize = 12.sp, color = Color.Gray)
     }
 }

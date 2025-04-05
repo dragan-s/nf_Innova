@@ -12,16 +12,16 @@ interface GithubApi {
     @GET("users/{name}")
     suspend fun getUser(@Path("name") name: String)  : User
 
-    @GET("users/{name}/repos")  // https://api.github.com/users/octocat/repos -
-    suspend fun getUserRepos(@Path("name") name : String) : List<Repo>    //Repos
+    @GET("users/{name}/repos")
+    suspend fun getUserRepos(@Path("name") name : String) : List<Repo>
 
-    @GET("repos/{name}/{repo}")  //https://api.github.com/repos/octocat/{repo}
+    @GET("repos/{name}/{repo}")
     suspend fun getRepoDetails(
         @Path("name") name : String,
         @Path("repo") repo : String
     ) : RepoDetails
 
-    @GET("repos/{name}/{repo}/tags")  //https://api.github.com/repos/octocat/{repo}/tags
+    @GET("repos/{name}/{repo}/tags")
     suspend fun getRepoTags(
         @Path("name") name : String,
         @Path("repo") repo : String

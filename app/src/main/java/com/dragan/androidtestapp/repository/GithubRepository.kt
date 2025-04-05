@@ -27,7 +27,7 @@ class GithubRepository @Inject constructor(
         val response = try {
             api.getUserRepos(name)
         } catch (e: Exception) {
-            return Result.Error("\"An unknown error occurred")
+            return Result.Error("An unknown error occurred")
         }
         return Result.Success(response)
     }

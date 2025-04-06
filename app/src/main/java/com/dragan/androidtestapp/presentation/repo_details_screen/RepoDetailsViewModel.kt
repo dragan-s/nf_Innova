@@ -53,7 +53,6 @@ class RepoDetailsViewModel @Inject constructor(
     }
 
     fun getTags() {
-        println("#### tags | username = $userName | repo name = $repoName")
         viewModelScope.launch {
             isLoading.value = true
             val result = repository.getRepoTags(userName, repoName)

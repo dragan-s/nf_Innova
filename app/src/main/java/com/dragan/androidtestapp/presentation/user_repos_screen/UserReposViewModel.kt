@@ -33,7 +33,6 @@ class UserReposViewModel @Inject constructor(
             val result = repository.getUser(name)
             when (result) {
                 is Resource.Success -> {
-                    println("#### result.data?.name | ${result.data?.login}")
                     if (!result.data?.login.isNullOrEmpty()) {
                         isLoading.value = false
                         loadError.value = ""
@@ -56,7 +55,6 @@ class UserReposViewModel @Inject constructor(
             val result = repository.getUserRepos(name)
             when (result) {
                 is Resource.Success -> {
-                    println("##### user repos = ${result.data}")
                     if (!result.data.isNullOrEmpty()) {
                         isLoading.value = false
                         loadError.value = ""

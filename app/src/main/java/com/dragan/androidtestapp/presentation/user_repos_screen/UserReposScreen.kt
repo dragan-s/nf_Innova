@@ -10,11 +10,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -39,22 +44,36 @@ fun UserReposScreen(
 
     val user by remember { viewModel.user }
 
-    Surface(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        Column() {
-            Spacer(modifier = Modifier.height(25.dp))
-
-            Text(
-                modifier = Modifier
-                    .padding(8.dp)
-                    .fillMaxWidth(),
-                text = "User : ${user?.name}"
-            )
-
-            Spacer(modifier = Modifier.height(25.dp))
-
+    Scaffold { padding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+        ) {
+            CustomTopBar(title = user?.name?.let { "Repos for $it" } ?: "User Repos")
             ReposList(navController = navController, user?.login)
+        }
+    }
+}
+
+@Composable
+fun CustomTopBar(title: String) {
+    Surface(
+        tonalElevation = 4.dp,
+        shadowElevation = 4.dp,
+        color = MaterialTheme.colorScheme.primaryContainer,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 18.dp)
+        ) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                color = MaterialTheme.colorScheme.onPrimaryContainer
+            )
         }
     }
 }
@@ -67,67 +86,83 @@ fun ReposList(
 ) {
 
     val reposList by remember { viewModel.reposList }
+    val loadError by remember { viewModel.loadError }
+    val isLoading by remember { viewModel.isLoading }
 
-    LazyColumn(
-        contentPadding = PaddingValues(16.dp)
-    ) {
-        items(reposList) { repoItem ->
-            RepoRowItem(repoItem, onClick = {
-                navController.navigate("repo_details_screen/${userName}/${repoItem.name}")
-            })
+    Box(modifier = Modifier.fillMaxSize()) {
+        LazyColumn(
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            items(reposList) { repoItem ->
+                RepoRowItem(repoItem, onClick = {
+                    navController.navigate("repo_details_screen/${userName}/${repoItem.name}")
+                })
+            }
         }
-    }
-
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = Modifier.fillMaxSize()
-    ) {
-        val loadError by remember { viewModel.loadError }
-        val isLoading by remember { viewModel.isLoading }
 
         if (isLoading) {
-            CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+            CircularProgressIndicator(
+                modifier = Modifier.align(Alignment.Center),
+                color = MaterialTheme.colorScheme.primary
+            )
         }
+
         if (loadError.isNotEmpty()) {
-            RetrySection(error = loadError) {
-                viewModel.getUser(TEST_USERNAME)
-            }
+            RetrySection(
+                error = loadError,
+                onRetry = { viewModel.getUser(TEST_USERNAME) }
+            )
         }
     }
 }
 
 @Composable
 fun RepoRowItem(repoItem: Repo, onClick: () -> Unit) {
-    Column(
+    Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp)
             .clickable(onClick = onClick),
-        verticalArrangement = Arrangement.SpaceBetween
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.elevatedCardElevation(4.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.Gray)
     ) {
-        Text(
-            text = repoItem.name,
-            fontWeight = FontWeight.SemiBold,
-            modifier = Modifier.fillMaxWidth()
-        )
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                text = repoItem.name,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
+            )
 
-        Spacer(Modifier.height(5.dp))
+            Spacer(modifier = Modifier.height(6.dp))
 
-        Text(text = "Opened issues: ${repoItem.open_issues}")
+            Text(
+                text = "Opened issues: ${repoItem.open_issues}",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
     }
 }
 
 @Composable
 fun RetrySection(
     error: String,
-    onRetry: () -> Unit
+    onRetry: () -> Unit,
 ) {
     Column {
-        Text(error, color = Color.Red, fontSize = 18.sp)
+        Text(
+            error,
+            color = Color.Red,
+            fontSize = 18.sp,
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
         Spacer(modifier = Modifier.height(8.dp))
         Button(
             onClick = { onRetry() },
-            modifier = Modifier.align(Alignment.CenterHorizontally)
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .width(200.dp)
         ) {
             Text(text = "Retry")
         }

@@ -16,9 +16,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -37,64 +40,76 @@ import com.dragan.androidtestapp.presentation.user_repos_screen.RetrySection
 
 @Composable
 fun RepoDetailsScreen(
-    viewModel: RepoDetailsViewModel = hiltViewModel()
+    viewModel: RepoDetailsViewModel = hiltViewModel(),
 ) {
 
     val repoDetails by remember { viewModel.repoDetails }
     val tagsList by remember { viewModel.tagsList }
+    val loadError by remember { viewModel.loadError }
+    val isLoading by remember { viewModel.isLoading }
 
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp)
-    ) {
-        item {
-            RepoDetailsHeader(
-                avatarUrl = repoDetails?.owner?.avatar_url ?: "",
-                userName = repoDetails?.owner?.login ?: "",
-                repoName = repoDetails?.name ?: "",
-                watchers = repoDetails?.watchers_count ?: -1,
-                forks = repoDetails?.forks_count ?: -1
-            )
+    Scaffold { padding ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+        ) {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                item {
+                    RepoDetailsHeader(
+                        avatarUrl = repoDetails?.owner?.avatar_url ?: "",
+                        userName = repoDetails?.owner?.login ?: "",
+                        repoName = repoDetails?.name ?: "",
+                        watchers = repoDetails?.watchers_count ?: -1,
+                        forks = repoDetails?.forks_count ?: -1
+                    )
 
-            Spacer(modifier = Modifier.height(10.dp))
+                    Spacer(modifier = Modifier.height(10.dp))
 
-            val tagText =
-                if (tagsList.isNotEmpty()) {
-                    "Repo tags"
-                } else {
-                    "No tags for this repository"
+                    val tagText =
+                        if (tagsList.isNotEmpty()) {
+                            "Repo tags"
+                        } else {
+                            "No tags for this repository"
+                        }
+
+                    Text(
+                        text = tagText,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp,
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    )
                 }
 
-            Text(
-                text = tagText,
-                fontWeight = FontWeight.Bold,
-                fontSize = 16.sp,
-                modifier = Modifier.padding(vertical = 8.dp)
-            )
-        }
+                items(tagsList) { tag ->
+                    TagItem(
+                        tagName = tag.name,
+                        sha = tag.commit.sha
+                    )
+                }
+            }
 
-        items(tagsList) {tag ->
-            TagItem(
-                tagName = tag.name,
-                sha = tag.commit.sha
-            )
-            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-        }
-    }
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = Modifier.fillMaxSize()
-    ) {
-        val loadError by remember { viewModel.loadError }
-        val isLoading by remember { viewModel.isLoading }
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                if (isLoading) {
+                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+                }
 
-        if (isLoading) {
-            CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
-        }
-        if (loadError.isNotEmpty()) {
-            RetrySection(error = loadError) {
-                viewModel.getRepoDetails()
-                viewModel.getTags()
+                if (loadError.isNotEmpty()) {
+                    RetrySection(
+                        error = loadError,
+                        onRetry = {
+                            viewModel.getRepoDetails()
+                            viewModel.getTags()
+                        }
+                    )
+                }
             }
         }
     }
@@ -106,47 +121,52 @@ fun RepoDetailsHeader(
     userName: String,
     repoName: String,
     watchers: Int,
-    forks: Int
+    forks: Int,
 ) {
 
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(4.dp)
     ) {
-        AsyncImage(
-            model = avatarUrl,
-            contentDescription = "User Avatar",
-            modifier = Modifier
-                .size(64.dp)
-                .clip(CircleShape)
-                .border(2.dp, Color.Gray, CircleShape),
-            contentScale = ContentScale.Crop
-        )
-
-        Spacer(modifier = Modifier.width(16.dp))
-
-        Column(
-            modifier = Modifier.weight(1f)
+        Row(
+            modifier = Modifier.padding(16.dp)
         ) {
-            Text(
-                text = "user: $userName",
-                fontWeight = FontWeight.Bold,
-                fontSize = 18.sp
-            )
-            Text(
-                text = "repo name: $repoName",
-                fontSize = 16.sp,
-                color = Color.DarkGray
+            AsyncImage(
+                model = avatarUrl,
+                contentDescription = "User Avatar",
+                modifier = Modifier
+                    .size(64.dp)
+                    .clip(CircleShape)
+                    .border(2.dp, Color.Gray, CircleShape),
+                contentScale = ContentScale.Crop
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.width(16.dp))
 
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            Column(
+                modifier = Modifier.weight(1f)
             ) {
-                Text(text = "Watchers: $watchers")
-                Text(text = "Forks: $forks")
+                Text(
+                    text = "user: $userName",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+                Text(
+                    text = "repo name: $repoName",
+                    fontSize = 16.sp,
+                    color = Color.DarkGray
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    Text(text = "Watchers: $watchers")
+                    Text(text = "Forks: $forks")
+                }
             }
         }
     }
@@ -154,8 +174,24 @@ fun RepoDetailsHeader(
 
 @Composable
 fun TagItem(tagName: String, sha: String) {
-    Column(modifier = Modifier.fillMaxWidth()) {
-        Text(text = tagName, fontWeight = FontWeight.Bold)
-        Text(text = "SHA: $sha", fontSize = 12.sp, color = Color.Gray)
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.Gray),
+        elevation = CardDefaults.cardElevation(2.dp)
+    ) {
+        Column(modifier = Modifier.padding(12.dp)) {
+            Text(
+                text = tagName,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Medium
+            )
+            Text(
+                text = "SHA: $sha",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
     }
 }
